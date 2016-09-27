@@ -81,6 +81,7 @@ def get_datatable_html(table):
 
     options = {
         'source': get_attribute(table.attrs, 'yaml', datatable_defaults['source']),
+        'css': table['class'],
         'filter-control': boolean(get_attribute(table.attrs, 'filter-control', datatable_defaults['filter-control'])),
         'show-chart': boolean(get_attribute(table.attrs, 'show-chart', datatable_defaults['show-chart']))
     }
