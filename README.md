@@ -1,9 +1,7 @@
 Pelican-datatable - Automatic dynamic table generation for Pelican
 ==================================================================
 
-pelican-datatable is an open source Pelican plugin to produce dynamic HTML tables with visualizations. The plugin provides an automatic HTML table generation from a data structure. Currently plugin only works for Markdown formatted content. 
-
-This pelican plugin is based on [js-datatable JQuery plugin](https://github.com/toni-heittola/js-datatable). 
+pelican-datatable is an open source Pelican plugin to produce dynamic HTML tables with visualizations. The plugin provides an automatic HTML table generation from a data structure. Currently plugin only works for Markdown formatted content. This pelican plugin is basically Pelican wrapper for [js-datatable JQuery plugin](https://github.com/toni-heittola/js-datatable). The project was originally developed for the needs of an academic data visualization (see e.g. [DCASE2016 evaluation campaign results](http://www.cs.tut.fi/sgn/arg/dcase2016/task-results-acoustic-scene-classification)).
 
 **Author**
 
