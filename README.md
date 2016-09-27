@@ -29,9 +29,9 @@ Or install one by one:
 
 ## Pelican installation
 
-Make sure plugin installation root directory in set in `pelicanconf.py`:
+Make sure the directory where the plugin was installed is set in `pelicanconf.py`. For example if you installed in `plugins/pelican-datatable`, add:
 
-    PLUGIN_PATHS = ['plugins/pelican-datatable',]
+    PLUGIN_PATHS = ['plugins']
 
 Enable pelican-datatable:
 
