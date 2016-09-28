@@ -232,25 +232,25 @@ def get_datatable_html(table):
 
     # Javascript
     js_include = [
-        '<script type="text/javascript" src="theme/js/bootstrap-table.js"></script>'
+        '<script type="text/javascript" src="theme/js/bootstrap-table.min.js"></script>'
     ]
 
     if 'filter-control' in options and options['filter-control']:
-        js_include.append('<script type="text/javascript" src="theme/js/bootstrap-table-filter-control.js"></script>')
+        js_include.append('<script type="text/javascript" src="theme/js/bootstrap-table-filter-control.min.js"></script>')
 
     if 'show-chart' in options and options['show-chart']:
-        js_include.append('<script type="text/javascript" src="theme/js/Chart.bundle.js"></script>')
-    js_include.append('<script type="text/javascript" src="theme/js/datatable.js"></script>')
+        js_include.append('<script type="text/javascript" src="theme/js/Chart.bundle.min.js"></script>')
+    js_include.append('<script type="text/javascript" src="theme/js/datatable.min.js"></script>')
 
     # CSS
     css_include = [
-        '<link rel="stylesheet" href="theme/css/bootstrap-table.css">'
+        '<link rel="stylesheet" href="theme/css/bootstrap-table.min.css">'
     ]
 
     if 'filter-control' in options and options['filter-control']:
-        css_include.append('<link rel="stylesheet" href="theme/css/bootstrap-table-filter-control.css">')
+        css_include.append('<link rel="stylesheet" href="theme/css/bootstrap-table-filter-control.min.css">')
 
-    css_include.append('<link rel="stylesheet" href="theme/css/datatable.css">')
+    css_include.append('<link rel="stylesheet" href="theme/css/datatable.min.css">')
 
     return {
         'table': table_start + table_thead + table_tbody + table_end,
