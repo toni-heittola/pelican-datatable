@@ -327,7 +327,6 @@ def move_resources(gen):
         js_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'js.min')
         if os.path.isdir(js_source):
             copy_resources(js_source, js_target, os.listdir(js_source))
-        break
 
 
 def register():
