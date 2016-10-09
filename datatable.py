@@ -316,8 +316,13 @@ def move_resources(gen):
 
     """
 
-    js_target = os.path.join(gen.output_path, 'theme', 'js')
     css_target = os.path.join(gen.output_path, 'theme', 'css')
+    if not os.path.exists(os.path.join(gen.output_path, 'theme', 'css')):
+        os.makedirs(os.path.join(gen.output_path, 'theme', 'css'))
+
+    js_target = os.path.join(gen.output_path, 'theme', 'js')
+    if not os.path.exists(os.path.join(gen.output_path, 'theme', 'js')):
+        os.makedirs(os.path.join(gen.output_path, 'theme', 'js'))
 
     plugin_paths = gen.settings['PLUGIN_PATHS']
     for path in plugin_paths:
