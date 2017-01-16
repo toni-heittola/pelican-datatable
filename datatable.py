@@ -22,7 +22,8 @@ __version__ = '0.1.6'
 datatable_defaults = {
     'source': None,
     'show-chart': 'no',
-    'filter-control': 'no'
+    'filter-control': 'no',
+    'site-url': ''
 }
 
 
@@ -232,25 +233,25 @@ def get_datatable_html(table):
 
     # Javascript
     js_include = [
-        '<script type="text/javascript" src="/theme/js/bootstrap-table.min.js"></script>'
+        '<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table.min.js"></script>'
     ]
 
     if 'filter-control' in options and options['filter-control']:
-        js_include.append('<script type="text/javascript" src="/theme/js/bootstrap-table-filter-control.min.js"></script>')
+        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table-filter-control.min.js"></script>')
 
     if 'show-chart' in options and options['show-chart']:
-        js_include.append('<script type="text/javascript" src="/theme/js/Chart.bundle.min.js"></script>')
-    js_include.append('<script type="text/javascript" src="/theme/js/datatable.min.js"></script>')
+        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/Chart.bundle.min.js"></script>')
+    js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/datatable.min.js"></script>')
 
     # CSS
     css_include = [
-        '<link rel="stylesheet" href="/theme/css/bootstrap-table.min.css">'
+        '<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table.min.css">'
     ]
 
     if 'filter-control' in options and options['filter-control']:
-        css_include.append('<link rel="stylesheet" href="/theme/css/bootstrap-table-filter-control.min.css">')
+        css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table-filter-control.min.css">')
 
-    css_include.append('<link rel="stylesheet" href="/theme/css/datatable.min.css">')
+    css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/datatable.min.css">')
 
     return {
         'table': table_start + table_thead + table_tbody + table_end,
@@ -333,8 +334,13 @@ def move_resources(gen):
         if os.path.isdir(js_source):
             copy_resources(js_source, js_target, os.listdir(js_source))
 
+def init(gen):
+    datatable_defaults['site-url'] = gen.settings['SITEURL']
 
 def register():
+    signals.page_generator_init.connect(init)
+    signals.article_generator_init.connect(init)
+
     signals.article_generator_context.connect(add_head)
     signals.page_generator_context.connect(add_head)
 
