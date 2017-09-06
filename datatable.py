@@ -159,75 +159,76 @@ def get_datatable_html(table):
     # Table / tbody
     table_tbody = "<tbody>\n"
     for row in data:
-        table_tbody += '<tr'
-        if 'data-row-highlighting' in table.attrs and boolean(table.attrs['data-row-highlighting']):
-            if 'row_css' in row and row['row_css']:
-                table_tbody += ' class="'+row['row_css']+'"'
+        if row:
+            table_tbody += '<tr'
+            if 'data-row-highlighting' in table.attrs and boolean(table.attrs['data-row-highlighting']):
+                if 'row_css' in row and row['row_css']:
+                    table_tbody += ' class="'+row['row_css']+'"'
 
-        if 'hline' in row and row['hline']:
-            table_tbody += ' data-hline="true"'
+            if 'hline' in row and row['hline']:
+                table_tbody += ' data-hline="true"'
 
-        table_tbody += ">\n"
-        for f in fields:
-            item = fields[f]
+            table_tbody += ">\n"
+            for f in fields:
+                item = fields[f]
 
-            if 'rank' in item and item['rank']:
-                table_tbody += "<td></td>\n"
-            elif item['field'] in row:
-                table_tbody += "  <td>"
+                if 'rank' in item and item['rank']:
+                    table_tbody += "<td></td>\n"
+                elif item['field'] in row:
+                    table_tbody += "  <td>"
 
-                field_value = row[item['field']]
-                if 'value-type' in item and item['value-type']:
-                    if item['value-type'].startswith('int'):
-                        field_value = str(field_value)
+                    field_value = row[item['field']]
+                    if 'value-type' in item and item['value-type']:
+                        if item['value-type'].startswith('int'):
+                            field_value = str(field_value)
 
-                    elif item['value-type'].startswith('float1'):
-                        if field_value is None:
-                            field_value = ""
-                        elif isinstance(field_value, (int, long, float, complex)):
-                            field_value = "{:.1f}".format(float(field_value))
-                        else:
-                            field_value = ""
+                        elif item['value-type'].startswith('float1'):
+                            if field_value is None:
+                                field_value = ""
+                            elif isinstance(field_value, (int, long, float, complex)):
+                                field_value = "{:.1f}".format(float(field_value))
+                            else:
+                                field_value = ""
 
-                    elif item['value-type'].startswith('float2'):
-                        if field_value is None:
-                            field_value = ""
-                        elif isinstance(field_value, (int, long, float, complex)):
-                            field_value = "{:.2f}".format(float(field_value))
-                        else:
-                            field_value = ""
+                        elif item['value-type'].startswith('float2'):
+                            if field_value is None:
+                                field_value = ""
+                            elif isinstance(field_value, (int, long, float, complex)):
+                                field_value = "{:.2f}".format(float(field_value))
+                            else:
+                                field_value = ""
 
-                    elif item['value-type'].startswith('float3'):
-                        if field_value is None:
-                            field_value = ""
-                        elif isinstance(field_value, (int, long, float, complex)):
-                            field_value = "{:.3f}".format(float(field_value))
-                        else:
-                            field_value = ""
+                        elif item['value-type'].startswith('float3'):
+                            if field_value is None:
+                                field_value = ""
+                            elif isinstance(field_value, (int, long, float, complex)):
+                                field_value = "{:.3f}".format(float(field_value))
+                            else:
+                                field_value = ""
 
-                    elif item['value-type'].startswith('float4'):
-                        if field_value is None:
-                            field_value = ""
-                        elif isinstance(field_value, (int, long, float, complex)):
-                            field_value = "{:.4f}".format(float(field_value))
-                        else:
-                            field_value = ""
+                        elif item['value-type'].startswith('float4'):
+                            if field_value is None:
+                                field_value = ""
+                            elif isinstance(field_value, (int, long, float, complex)):
+                                field_value = "{:.4f}".format(float(field_value))
+                            else:
+                                field_value = ""
 
-                    elif item['value-type'] == 'str':
-                        if field_value:
-                            field_value = field_value
-                        else:
-                            field_value = '-'
-                try:
-                    table_tbody += field_value
-                except:
-                    pass
+                        elif item['value-type'] == 'str':
+                            if field_value:
+                                field_value = field_value
+                            else:
+                                field_value = '-'
+                    try:
+                        table_tbody += field_value
+                    except:
+                        pass
 
-                table_tbody += "</td>\n"
-            else:
-                table_tbody += "<td></td>\n"
+                    table_tbody += "</td>\n"
+                else:
+                    table_tbody += "<td></td>\n"
 
-        table_tbody += "</tr>\n"
+            table_tbody += "</tr>\n"
 
     table_tbody += "</tbody>\n"
 
