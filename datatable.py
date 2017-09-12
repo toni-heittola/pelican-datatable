@@ -182,6 +182,7 @@ def get_datatable_html(table):
                     if 'value-type' in item and item['value-type']:
                         if item['value-type'].startswith('int'):
                             field_value = str(field_value)
+
                         elif item['value-type'].startswith('float1-percentage-interval'):
                             if field_value is None:
                                 field_value = ""
@@ -195,6 +196,7 @@ def get_datatable_html(table):
                                     )
                                 else:
                                     field_value = ""
+
                         elif item['value-type'].startswith('float2-percentage-interval'):
                             if field_value is None:
                                 field_value = ""
@@ -208,6 +210,7 @@ def get_datatable_html(table):
                                     )
                                 else:
                                     field_value = ""
+
                         elif item['value-type'].startswith('float3-percentage-interval'):
                             if field_value is None:
                                 field_value = ""
@@ -221,6 +224,7 @@ def get_datatable_html(table):
                                     )
                                 else:
                                     field_value = ""
+
                         elif item['value-type'].startswith('float4-percentage-interval'):
                             if field_value is None:
                                 field_value = ""
@@ -314,8 +318,11 @@ def get_datatable_html(table):
 
 
 def is_interval_format(value):
-    regex = r"[+-]?\d+(?:\.\d+)\s+\([+-]?\d+(?:\.\d+)\s+-\s+[+-]?\d+(?:\.\d+)\)"
-    return bool(re.search(regex, value))
+    if isinstance(value, str):
+        regex = r"[+-]?\d+(?:\.\d+)\s+\([+-]?\d+(?:\.\d+)\s+-\s+[+-]?\d+(?:\.\d+)\)"
+        return bool(re.search(regex, value))
+    else:
+        return False
 
 
 def boolean(argument):
