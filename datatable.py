@@ -13,6 +13,7 @@ import logging
 from pelican import signals, contents
 from docutils.parsers.rst import directives
 import yaml
+import re
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
@@ -182,6 +183,61 @@ def get_datatable_html(table):
                         if item['value-type'].startswith('int'):
                             field_value = str(field_value)
 
+                        elif item['value-type'].startswith('float1-percentage-interval'):
+                            if field_value is None:
+                                field_value = ""
+                            elif is_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 3:
+                                    field_value = "{value:.1f} ({interval_low:.1f} - {interval_high:.1f})".format(
+                                        value=float(numbers[0]),
+                                        interval_low=float(numbers[1]),
+                                        interval_high=float(numbers[2]),
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float2-percentage-interval'):
+                            if field_value is None:
+                                field_value = ""
+                            elif is_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 3:
+                                    field_value = "{value:.2f} ({interval_low:.2f} - {interval_high:.2f})".format(
+                                        value=float(numbers[0]),
+                                        interval_low=float(numbers[1]),
+                                        interval_high=float(numbers[2]),
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float3-percentage-interval'):
+                            if field_value is None:
+                                field_value = ""
+                            elif is_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 3:
+                                    field_value = "{value:.3f} ({interval_low:.3f} - {interval_high:.3f})".format(
+                                        value=float(numbers[0]),
+                                        interval_low=float(numbers[1]),
+                                        interval_high=float(numbers[2]),
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float4-percentage-interval'):
+                            if field_value is None:
+                                field_value = ""
+                            elif is_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 3:
+                                    field_value = "{value:.4f} ({interval_low:.4f} - {interval_high:.4f})".format(
+                                        value=float(numbers[0]),
+                                        interval_low=float(numbers[1]),
+                                        interval_high=float(numbers[2]),
+                                    )
+                                else:
+                                    field_value = ""
                         elif item['value-type'].startswith('float1'):
                             if field_value is None:
                                 field_value = ""
@@ -261,6 +317,14 @@ def get_datatable_html(table):
     }
 
 
+def is_interval_format(value):
+    if isinstance(value, str):
+        regex = r"[+-]?\d+(?:\.\d+)\s+\([+-]?\d+(?:\.\d+)\s+-\s+[+-]?\d+(?:\.\d+)\)"
+        return bool(re.search(regex, value))
+    else:
+        return False
+
+
 def boolean(argument):
     """Conversion function for yes/no True/False."""
     value = directives.choice(argument, ('yes', 'True', 'true', '1', 'no', 'False', 'false', '0'))
@@ -335,8 +399,10 @@ def move_resources(gen):
         if os.path.isdir(js_source):
             copy_resources(js_source, js_target, os.listdir(js_source))
 
+
 def init(gen):
     datatable_defaults['site-url'] = gen.settings['SITEURL']
+
 
 def register():
     signals.page_generator_init.connect(init)
