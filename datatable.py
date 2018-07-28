@@ -238,6 +238,7 @@ def get_datatable_html(table):
                                     )
                                 else:
                                     field_value = ""
+
                         elif item['value-type'].startswith('float1'):
                             if field_value is None:
                                 field_value = ""
@@ -275,12 +276,15 @@ def get_datatable_html(table):
                                 field_value = field_value
                             else:
                                 field_value = '-'
+
                     try:
                         table_tbody += field_value
+
                     except:
                         pass
 
                     table_tbody += "</td>\n"
+
                 else:
                     table_tbody += "<td></td>\n"
 
