@@ -7,6 +7,8 @@ Author: Toni Heittola (toni.heittola@gmail.com)
 Dynamic HTML tables with visualization from given yaml-file.
 
 """
+
+from past.builtins import long
 import os.path
 import shutil
 import logging
