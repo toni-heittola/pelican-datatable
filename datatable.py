@@ -142,6 +142,7 @@ def get_datatable_html(table):
 
                 if 'colspan' in header.attrs:
                     column_id += int(header.attrs['colspan'])
+
                 elif item['field'] or item['rank']:
                     column_id += 1
 
@@ -177,35 +178,42 @@ def get_datatable_html(table):
 
                 if 'rank' in item and item['rank']:
                     table_tbody += "<td></td>\n"
+
                 elif item['field'] in row:
                     table_tbody += "  <td>"
 
                     field_value = row[item['field']]
                     if 'value-type' in item and item['value-type']:
                         if item['value-type'].startswith('int'):
-                            field_value = str(field_value)
+                            if field_value is not None:
+                                field_value = str(field_value)
+                            else:
+                                field_value = ''
 
                         elif item['value-type'].startswith('float1-percentage-interval'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.1f} ({interval_low:.1f} - {interval_high:.1f})".format(
+                                    field_value = '{value:.1f} ({interval_low:.1f} - {interval_high:.1f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
                                     )
+
                                 else:
                                     field_value = ""
 
                         elif item['value-type'].startswith('float2-percentage-interval'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.2f} ({interval_low:.2f} - {interval_high:.2f})".format(
+                                    field_value = '{value:.2f} ({interval_low:.2f} - {interval_high:.2f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
@@ -219,7 +227,7 @@ def get_datatable_html(table):
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.3f} ({interval_low:.3f} - {interval_high:.3f})".format(
+                                    field_value = '{value:.3f} ({interval_low:.3f} - {interval_high:.3f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
@@ -233,49 +241,57 @@ def get_datatable_html(table):
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.4f} ({interval_low:.4f} - {interval_high:.4f})".format(
+                                    field_value = '{value:.4f} ({interval_low:.4f} - {interval_high:.4f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
                                     )
                                 else:
-                                    field_value = ""
+                                    field_value = ''
 
                         elif item['value-type'].startswith('float1'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.1f}".format(float(field_value))
+                                field_value = '{:.1f}'.format(float(field_value))
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float2'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.2f}".format(float(field_value))
+                                field_value = '{:.2f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float3'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.3f}".format(float(field_value))
+                                field_value = '{:.3f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float4'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.4f}".format(float(field_value))
+                                field_value = '{:.4f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'] == 'str':
                             if field_value:
                                 field_value = field_value
+
                             else:
                                 field_value = '-'
 
@@ -296,27 +312,25 @@ def get_datatable_html(table):
 
     # Javascript
     js_include = [
-        '<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table.min.js"></script>'
+        '<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/bootstrap-table.min.js"></script>'
     ]
 
     if 'filter-control' in options and options['filter-control']:
-        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table-filter-control.min.js"></script>')
+        js_include.append('<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/bootstrap-table-filter-control.min.js"></script>')
 
-    #if 'show-chart' in options and options['show-chart']:
-    js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/Chart.bundle.min.js"></script>')
-
-    js_include.append('<script type="text/javascript" src="' + datatable_defaults['site-url']+ '/theme/js/moment.min.js"></script>')
+    js_include.append('<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/Chart.bundle.min.js"></script>')
+    js_include.append('<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/moment.min.js"></script>')
     js_include.append('<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/datatable.min.js"></script>')
 
     # CSS
     css_include = [
-        '<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table.min.css">'
+        '<link rel="stylesheet" href="' + datatable_defaults['site-url'] + '/theme/css/bootstrap-table.min.css">'
     ]
 
     if 'filter-control' in options and options['filter-control']:
-        css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table-filter-control.min.css">')
+        css_include.append('<link rel="stylesheet" href="' + datatable_defaults['site-url'] + '/theme/css/bootstrap-table-filter-control.min.css">')
 
-    css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/datatable.min.css">')
+    css_include.append('<link rel="stylesheet" href="' + datatable_defaults['site-url'] + '/theme/css/datatable.min.css">')
 
     return {
         'table': table_start + table_thead + table_tbody + table_end,
