@@ -302,8 +302,8 @@ def get_datatable_html(table):
     if 'filter-control' in options and options['filter-control']:
         js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table-filter-control.min.js"></script>')
 
-    if 'show-chart' in options and options['show-chart']:
-        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/Chart.bundle.min.js"></script>')
+    #if 'show-chart' in options and options['show-chart']:
+    js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/Chart.bundle.min.js"></script>')
 
     js_include.append('<script type="text/javascript" src="' + datatable_defaults['site-url']+ '/theme/js/moment.min.js"></script>')
     js_include.append('<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/datatable.min.js"></script>')
