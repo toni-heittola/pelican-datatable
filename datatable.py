@@ -295,6 +295,9 @@ def get_datatable_html(table):
                             else:
                                 field_value = '-'
 
+                        else:
+                            field_value = str(field_value)
+
                     try:
                         table_tbody += field_value
 
