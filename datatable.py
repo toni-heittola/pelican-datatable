@@ -293,10 +293,14 @@ def get_datatable_html(table):
                                 field_value = field_value
 
                             else:
-                                field_value = '-'
+                                field_value = ''
 
                         else:
-                            field_value = str(field_value)
+                            if field_value is not None:
+                                field_value = str(field_value)
+
+                            else:
+                                field_value = ''
 
                     try:
                         table_tbody += field_value
