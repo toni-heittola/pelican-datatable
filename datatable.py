@@ -412,12 +412,14 @@ def move_resources(gen):
         css_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'css.min', 'datatable.bundle.min.css')
         if not os.path.exists(css_target):
             os.makedirs(css_target)
-        shutil.copy2(css_source, css_target)
+        if os.path.exists(css_source):
+            shutil.copy2(css_source, css_target)
 
         js_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'js.min', 'datatable.bundle.min.js')
         if not os.path.exists(js_target):
             os.makedirs(js_target)
-        shutil.copy2(js_source, js_target)
+        if os.path.exists(js_source):
+            shutil.copy2(js_source, js_target)
 
 
 def init(gen):
