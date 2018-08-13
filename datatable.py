@@ -290,25 +290,13 @@ def get_datatable_html(table):
 
     # Javascript
     js_include = [
-        '<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table.min.js"></script>'
+        '<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/datatable.bundle.min.js"></script>'
     ]
-
-    if 'filter-control' in options and options['filter-control']:
-        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table-filter-control.min.js"></script>')
-
-    if 'show-chart' in options and options['show-chart']:
-        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/Chart.bundle.min.js"></script>')
-    js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/datatable.min.js"></script>')
 
     # CSS
     css_include = [
-        '<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table.min.css">'
+        '<link rel="stylesheet" href="' + datatable_defaults['site-url'] + '/theme/css/datatable.bundle.min.css">'
     ]
-
-    if 'filter-control' in options and options['filter-control']:
-        css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table-filter-control.min.css">')
-
-    css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/datatable.min.css">')
 
     return {
         'table': table_start + table_thead + table_tbody + table_end,
@@ -392,12 +380,15 @@ def move_resources(gen):
 
     plugin_paths = gen.settings['PLUGIN_PATHS']
     for path in plugin_paths:
-        css_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'css.min')
-        if os.path.isdir(css_source):
-            copy_resources(css_source, css_target, os.listdir(css_source))
-        js_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'js.min')
-        if os.path.isdir(js_source):
-            copy_resources(js_source, js_target, os.listdir(js_source))
+        css_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'css.min', 'datatable.bundle.min.css')
+        if not os.path.exists(css_target):
+            os.makedirs(css_target)
+        shutil.copy2(css_source, css_target)
+
+        js_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'js.min', 'datatable.bundle.min.js')
+        if not os.path.exists(js_target):
+            os.makedirs(js_target)
+        shutil.copy2(js_source, js_target)
 
 
 def init(gen):
