@@ -7,6 +7,8 @@ Author: Toni Heittola (toni.heittola@gmail.com)
 Dynamic HTML tables with visualization from given yaml-file.
 
 """
+
+from past.builtins import long
 import os.path
 import shutil
 import logging
@@ -140,6 +142,7 @@ def get_datatable_html(table):
 
                 if 'colspan' in header.attrs:
                     column_id += int(header.attrs['colspan'])
+
                 elif item['field'] or item['rank']:
                     column_id += 1
 
@@ -175,35 +178,42 @@ def get_datatable_html(table):
 
                 if 'rank' in item and item['rank']:
                     table_tbody += "<td></td>\n"
+
                 elif item['field'] in row:
                     table_tbody += "  <td>"
 
                     field_value = row[item['field']]
                     if 'value-type' in item and item['value-type']:
                         if item['value-type'].startswith('int'):
-                            field_value = str(field_value)
+                            if field_value is not None:
+                                field_value = str(field_value)
+                            else:
+                                field_value = ''
 
                         elif item['value-type'].startswith('float1-percentage-interval'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.1f} ({interval_low:.1f} - {interval_high:.1f})".format(
+                                    field_value = '{value:.1f} ({interval_low:.1f} - {interval_high:.1f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
                                     )
+
                                 else:
                                     field_value = ""
 
                         elif item['value-type'].startswith('float2-percentage-interval'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.2f} ({interval_low:.2f} - {interval_high:.2f})".format(
+                                    field_value = '{value:.2f} ({interval_low:.2f} - {interval_high:.2f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
@@ -217,7 +227,7 @@ def get_datatable_html(table):
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.3f} ({interval_low:.3f} - {interval_high:.3f})".format(
+                                    field_value = '{value:.3f} ({interval_low:.3f} - {interval_high:.3f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
@@ -231,56 +241,75 @@ def get_datatable_html(table):
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.4f} ({interval_low:.4f} - {interval_high:.4f})".format(
+                                    field_value = '{value:.4f} ({interval_low:.4f} - {interval_high:.4f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
                                     )
                                 else:
-                                    field_value = ""
+                                    field_value = ''
+
                         elif item['value-type'].startswith('float1'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.1f}".format(float(field_value))
+                                field_value = '{:.1f}'.format(float(field_value))
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float2'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.2f}".format(float(field_value))
+                                field_value = '{:.2f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float3'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.3f}".format(float(field_value))
+                                field_value = '{:.3f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float4'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.4f}".format(float(field_value))
+                                field_value = '{:.4f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'] == 'str':
                             if field_value:
                                 field_value = field_value
+
                             else:
-                                field_value = '-'
+                                field_value = ''
+
+                        else:
+                            if field_value is not None:
+                                field_value = str(field_value)
+
+                            else:
+                                field_value = ''
+
                     try:
                         table_tbody += field_value
+
                     except:
                         pass
 
                     table_tbody += "</td>\n"
+
                 else:
                     table_tbody += "<td></td>\n"
 
