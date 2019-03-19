@@ -92,8 +92,13 @@ def get_datatable_html(table):
 
     if options['source'] and os.path.isfile(options['source']):
         try:
-            with open(options['source'], 'r') as field:
-                data = yaml.load(field)
+            from distutils.version import LooseVersion
+            if LooseVersion(str(yaml.__version__)) >= "5.1":
+                with open(options['source'], 'r') as field:
+                    data = yaml.load(field, Loader=yaml.FullLoader)
+            else:
+                with open(options['source'], 'r') as field:
+                    data = yaml.load(field)
 
             if 'data' in data:
                 data = data['data']
