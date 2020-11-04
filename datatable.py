@@ -90,6 +90,16 @@ def get_datatable_html(table):
         'show-chart': boolean(get_attribute(table.attrs, 'show-chart', datatable_defaults['show-chart']))
     }
 
+    # Javascript
+    js_include = [
+        '<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/datatable.bundle.min.js"></script>'
+    ]
+
+    # CSS
+    css_include = [
+        '<link rel="stylesheet" href="' + datatable_defaults['site-url'] + '/theme/css/datatable.bundle.min.css">'
+    ]
+
     if options['source'] and os.path.isfile(options['source']):
         try:
             from distutils.version import LooseVersion
@@ -107,8 +117,11 @@ def get_datatable_html(table):
             logger.warn('`pelican-datatable` failed to load file [' + str(options['source']) + ']')
             return None
     else:
-        logger.warn('`pelican-datatable` failed to load file [' + str(options['source']) + ']')
-        return None
+        return {
+            'table': str(table),
+            'js_include': js_include,
+            'css_include': css_include
+        }
 
     # Table / start
     table_start = "\n"+'<table class="{}" '.format(" ".join(options['css']))
@@ -119,7 +132,7 @@ def get_datatable_html(table):
             if attr == 'data-comparison-sets-json':
                 table_start += str(attr) + "='" + table.attrs[attr] + "' "
             else:
-                table_start += str(attr)+'="' + table.attrs[attr] +'" '
+                table_start += str(attr) + '="' + table.attrs[attr] + '" '
 
     # Filtering
     if 'filter-control' in options and options['filter-control']:
@@ -188,6 +201,7 @@ def get_datatable_html(table):
                     table_tbody += "  <td>"
 
                     field_value = row[item['field']]
+
                     if 'value-type' in item and item['value-type']:
                         if item['value-type'].startswith('int'):
                             if field_value is not None:
@@ -321,16 +335,6 @@ def get_datatable_html(table):
             table_tbody += "</tr>\n"
 
     table_tbody += "</tbody>\n"
-
-    # Javascript
-    js_include = [
-        '<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/datatable.bundle.min.js"></script>'
-    ]
-
-    # CSS
-    css_include = [
-        '<link rel="stylesheet" href="' + datatable_defaults['site-url'] + '/theme/css/datatable.bundle.min.css">'
-    ]
 
     return {
         'table': table_start + table_thead + table_tbody + table_end,
