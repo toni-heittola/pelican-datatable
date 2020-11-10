@@ -168,6 +168,9 @@ def get_datatable_html(table):
                     while column_id in fields:
                         column_id += 1
 
+                if 'data-field' in header.attrs and '.' in header.attrs['data-field']:
+                    header.attrs['data-field'] = header.attrs['data-field'].replace('.', '-')
+
                 table_thead += str(header)+"\n"  # Echo through
 
                 if item['field'] or item['rank']:
@@ -194,13 +197,29 @@ def get_datatable_html(table):
             for f in fields:
                 item = fields[f]
 
+                field_found = True
+                field_value = None
+                if '.' in item['field']:
+                    parts = item['field'].split('.')
+                    current_dict = row
+                    for part in parts:
+                        current_dict = current_dict.get(part, {})
+                        if not current_dict:
+                            field_found = False
+                        else:
+                            field_value = current_dict
+
+                else:
+                    if item['field'] not in row:
+                        field_found = False
+                    else:
+                        field_value = row[item['field']]
+
                 if 'rank' in item and item['rank']:
                     table_tbody += "<td></td>\n"
 
-                elif item['field'] in row:
+                elif field_found:
                     table_tbody += "  <td>"
-
-                    field_value = row[item['field']]
 
                     if 'value-type' in item and item['value-type']:
                         if item['value-type'].startswith('int'):
