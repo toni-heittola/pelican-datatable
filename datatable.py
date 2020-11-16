@@ -199,7 +199,7 @@ def get_datatable_html(table):
 
                 field_found = True
                 field_value = None
-                if '.' in item['field']:
+                if item['field'] and '.' in item['field']:
                     parts = item['field'].split('.')
                     current_dict = row
                     for part in parts:
