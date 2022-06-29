@@ -228,7 +228,64 @@ def get_datatable_html(table):
                             else:
                                 field_value = ''
 
-                        elif item['value-type'].startswith('float1-percentage-interval'):
+                        elif item['value-type'].startswith('float1-plusminus'):
+                            if field_value is None:
+                                field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.1f}±{interval:.1f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float2-plusminus'):
+                            if field_value is None:
+                                field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.2f}±{interval:.2f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float3-plusminus'):
+                            if field_value is None:
+                                field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.3f}±{interval:.3f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float4-plusminus'):
+                            if field_value is None:
+                                field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.4f}±{interval:.4f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float1-percentage-interval') or item['value-type'].startswith('float1-interval'):
                             if field_value is None:
                                 field_value = ''
 
@@ -244,7 +301,7 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float2-percentage-interval'):
+                        elif item['value-type'].startswith('float2-percentage-interval') or item['value-type'].startswith('float2-interval'):
                             if field_value is None:
                                 field_value = ''
 
@@ -259,7 +316,7 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float3-percentage-interval'):
+                        elif item['value-type'].startswith('float3-percentage-interval') or item['value-type'].startswith('float3-interval'):
                             if field_value is None:
                                 field_value = ""
                             elif is_interval_format(field_value):
@@ -273,7 +330,7 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float4-percentage-interval'):
+                        elif item['value-type'].startswith('float4-percentage-interval') or item['value-type'].startswith('float4-interval'):
                             if field_value is None:
                                 field_value = ""
                             elif is_interval_format(field_value):
@@ -365,6 +422,13 @@ def get_datatable_html(table):
 def is_interval_format(value):
     if isinstance(value, str):
         regex = r"[+-]?\d+(?:\.\d+)\s+\([+-]?\d+(?:\.\d+)\s+-\s+[+-]?\d+(?:\.\d+)\)"
+        return bool(re.search(regex, value))
+    else:
+        return False
+
+def is_plusminus_interval_format(value):
+    if isinstance(value, str):
+        regex = r"[+-]?\d+(?:\.\d+)±\d+(?:\.\d+)"
         return bool(re.search(regex, value))
     else:
         return False
