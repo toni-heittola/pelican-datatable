@@ -228,7 +228,7 @@ def get_datatable_html(table):
                             else:
                                 field_value = ''
 
-                        elif item['value-type'].startswith('float1-plusminus'):
+                        elif item['value-type'].startswith('float1-percentage-plusminus') or item['value-type'].startswith('float1-plusminus'):
                             if field_value is None:
                                 field_value = ""
 
@@ -243,7 +243,7 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float2-plusminus'):
+                        elif item['value-type'].startswith('float2-percentage-plusminus') or item['value-type'].startswith('float2-plusminus'):
                             if field_value is None:
                                 field_value = ""
 
@@ -257,7 +257,7 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float3-plusminus'):
+                        elif item['value-type'].startswith('float3-percentage-plusminus') or item['value-type'].startswith('float3-plusminus'):
                             if field_value is None:
                                 field_value = ""
 
@@ -271,7 +271,7 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float4-plusminus'):
+                        elif item['value-type'].startswith('float4-percentage-plusminus') or item['value-type'].startswith('float4-plusminus'):
                             if field_value is None:
                                 field_value = ""
 
