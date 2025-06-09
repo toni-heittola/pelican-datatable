@@ -90,10 +90,25 @@ def get_datatable_html(table):
         'show-chart': boolean(get_attribute(table.attrs, 'show-chart', datatable_defaults['show-chart']))
     }
 
+    # Javascript
+    js_include = [
+        '<script type="text/javascript" src="' + datatable_defaults['site-url'] + '/theme/js/datatable.bundle.min.js"></script>'
+    ]
+
+    # CSS
+    css_include = [
+        '<link rel="stylesheet" href="' + datatable_defaults['site-url'] + '/theme/css/datatable.bundle.min.css">'
+    ]
+
     if options['source'] and os.path.isfile(options['source']):
         try:
-            with open(options['source'], 'r') as field:
-                data = yaml.load(field)
+            from distutils.version import LooseVersion
+            if LooseVersion(str(yaml.__version__)) >= "5.1":
+                with open(options['source'], 'r') as field:
+                    data = yaml.load(field, Loader=yaml.FullLoader)
+            else:
+                with open(options['source'], 'r') as field:
+                    data = yaml.load(field)
 
             if 'data' in data:
                 data = data['data']
@@ -102,8 +117,11 @@ def get_datatable_html(table):
             logger.warn('`pelican-datatable` failed to load file [' + str(options['source']) + ']')
             return None
     else:
-        logger.warn('`pelican-datatable` failed to load file [' + str(options['source']) + ']')
-        return None
+        return {
+            'table': str(table),
+            'js_include': js_include,
+            'css_include': css_include
+        }
 
     # Table / start
     table_start = "\n"+'<table class="{}" '.format(" ".join(options['css']))
@@ -114,7 +132,7 @@ def get_datatable_html(table):
             if attr == 'data-comparison-sets-json':
                 table_start += str(attr) + "='" + table.attrs[attr] + "' "
             else:
-                table_start += str(attr)+'="' + table.attrs[attr] +'" '
+                table_start += str(attr) + '="' + table.attrs[attr] + '" '
 
     # Filtering
     if 'filter-control' in options and options['filter-control']:
@@ -142,12 +160,16 @@ def get_datatable_html(table):
 
                 if 'colspan' in header.attrs:
                     column_id += int(header.attrs['colspan'])
+
                 elif item['field'] or item['rank']:
                     column_id += 1
 
                 if column_id in fields:
                     while column_id in fields:
                         column_id += 1
+
+                if 'data-field' in header.attrs and '.' in header.attrs['data-field']:
+                    header.attrs['data-field'] = header.attrs['data-field'].replace('.', '-')
 
                 table_thead += str(header)+"\n"  # Echo through
 
@@ -175,23 +197,118 @@ def get_datatable_html(table):
             for f in fields:
                 item = fields[f]
 
+                field_found = True
+                field_value = None
+                if item['field'] and '.' in item['field']:
+                    parts = item['field'].split('.')
+                    current_dict = row
+                    for part in parts:
+                        current_dict = current_dict.get(part, {})
+                        if not current_dict:
+                            field_found = False
+                        else:
+                            field_value = current_dict
+
+                else:
+                    if item['field'] not in row:
+                        field_found = False
+                    else:
+                        field_value = row[item['field']]
+
                 if 'rank' in item and item['rank']:
                     table_tbody += "<td></td>\n"
-                elif item['field'] in row:
+
+                elif field_found:
                     table_tbody += "  <td>"
 
-                    field_value = row[item['field']]
                     if 'value-type' in item and item['value-type']:
                         if item['value-type'].startswith('int'):
-                            field_value = str(field_value)
+                            if field_value is not None:
+                                field_value = str(field_value)
+                            else:
+                                field_value = ''
 
-                        elif item['value-type'].startswith('float1-percentage-interval'):
+                        elif item['value-type'].startswith('float1-percentage-plusminus') or item['value-type'].startswith('float1-plusminus'):
                             if field_value is None:
                                 field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.1f}±{interval:.1f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float2-percentage-plusminus') or item['value-type'].startswith('float2-plusminus'):
+                            if field_value is None:
+                                field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.2f}±{interval:.2f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float3-percentage-plusminus') or item['value-type'].startswith('float3-plusminus'):
+                            if field_value is None:
+                                field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.3f}±{interval:.3f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float4-percentage-plusminus') or item['value-type'].startswith('float4-plusminus'):
+                            if field_value is None:
+                                field_value = ""
+
+                            elif is_plusminus_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 2:
+                                    field_value = '{value:.4f}±{interval:.4f}'.format(
+                                        value=float(numbers[0]),
+                                        interval=float(numbers[1])
+                                    )
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float1-percentage-interval') or item['value-type'].startswith('float1-interval'):
+                            if field_value is None:
+                                field_value = ''
+
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.1f} ({interval_low:.1f} - {interval_high:.1f})".format(
+                                    field_value = '{value:.1f} ({interval_low:.1f} - {interval_high:.1f})'.format(
+                                        value=float(numbers[0]),
+                                        interval_low=float(numbers[1]),
+                                        interval_high=float(numbers[2]),
+                                    )
+
+                                else:
+                                    field_value = ""
+
+                        elif item['value-type'].startswith('float2-percentage-interval') or item['value-type'].startswith('float2-interval'):
+                            if field_value is None:
+                                field_value = ''
+
+                            elif is_interval_format(field_value):
+                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
+                                if len(numbers) == 3:
+                                    field_value = '{value:.2f} ({interval_low:.2f} - {interval_high:.2f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
@@ -199,13 +316,13 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float2-percentage-interval'):
+                        elif item['value-type'].startswith('float3-percentage-interval') or item['value-type'].startswith('float3-interval'):
                             if field_value is None:
                                 field_value = ""
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.2f} ({interval_low:.2f} - {interval_high:.2f})".format(
+                                    field_value = '{value:.3f} ({interval_low:.3f} - {interval_high:.3f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
@@ -213,104 +330,87 @@ def get_datatable_html(table):
                                 else:
                                     field_value = ""
 
-                        elif item['value-type'].startswith('float3-percentage-interval'):
+                        elif item['value-type'].startswith('float4-percentage-interval') or item['value-type'].startswith('float4-interval'):
                             if field_value is None:
                                 field_value = ""
                             elif is_interval_format(field_value):
                                 numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
                                 if len(numbers) == 3:
-                                    field_value = "{value:.3f} ({interval_low:.3f} - {interval_high:.3f})".format(
+                                    field_value = '{value:.4f} ({interval_low:.4f} - {interval_high:.4f})'.format(
                                         value=float(numbers[0]),
                                         interval_low=float(numbers[1]),
                                         interval_high=float(numbers[2]),
                                     )
                                 else:
-                                    field_value = ""
+                                    field_value = ''
 
-                        elif item['value-type'].startswith('float4-percentage-interval'):
-                            if field_value is None:
-                                field_value = ""
-                            elif is_interval_format(field_value):
-                                numbers = re.findall(r'[+-]?\d+(?:\.\d+)', field_value)
-                                if len(numbers) == 3:
-                                    field_value = "{value:.4f} ({interval_low:.4f} - {interval_high:.4f})".format(
-                                        value=float(numbers[0]),
-                                        interval_low=float(numbers[1]),
-                                        interval_high=float(numbers[2]),
-                                    )
-                                else:
-                                    field_value = ""
                         elif item['value-type'].startswith('float1'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.1f}".format(float(field_value))
+                                field_value = '{:.1f}'.format(float(field_value))
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float2'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.2f}".format(float(field_value))
+                                field_value = '{:.2f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float3'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.3f}".format(float(field_value))
+                                field_value = '{:.3f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'].startswith('float4'):
                             if field_value is None:
-                                field_value = ""
+                                field_value = ''
+
                             elif isinstance(field_value, (int, long, float, complex)):
-                                field_value = "{:.4f}".format(float(field_value))
+                                field_value = '{:.4f}'.format(float(field_value))
+
                             else:
-                                field_value = ""
+                                field_value = ''
 
                         elif item['value-type'] == 'str':
                             if field_value:
                                 field_value = field_value
+
                             else:
-                                field_value = '-'
+                                field_value = ''
+
+                        else:
+                            if field_value is not None:
+                                field_value = str(field_value)
+
+                            else:
+                                field_value = ''
+
                     try:
                         table_tbody += field_value
+
                     except:
                         pass
 
                     table_tbody += "</td>\n"
+
                 else:
                     table_tbody += "<td></td>\n"
 
             table_tbody += "</tr>\n"
 
     table_tbody += "</tbody>\n"
-
-    # Javascript
-    js_include = [
-        '<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table.min.js"></script>'
-    ]
-
-    if 'filter-control' in options and options['filter-control']:
-        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/bootstrap-table-filter-control.min.js"></script>')
-
-    if 'show-chart' in options and options['show-chart']:
-        js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/Chart.bundle.min.js"></script>')
-    js_include.append('<script type="text/javascript" src="'+datatable_defaults['site-url']+'/theme/js/datatable.min.js"></script>')
-
-    # CSS
-    css_include = [
-        '<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table.min.css">'
-    ]
-
-    if 'filter-control' in options and options['filter-control']:
-        css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/bootstrap-table-filter-control.min.css">')
-
-    css_include.append('<link rel="stylesheet" href="'+datatable_defaults['site-url']+'/theme/css/datatable.min.css">')
 
     return {
         'table': table_start + table_thead + table_tbody + table_end,
@@ -322,6 +422,13 @@ def get_datatable_html(table):
 def is_interval_format(value):
     if isinstance(value, str):
         regex = r"[+-]?\d+(?:\.\d+)\s+\([+-]?\d+(?:\.\d+)\s+-\s+[+-]?\d+(?:\.\d+)\)"
+        return bool(re.search(regex, value))
+    else:
+        return False
+
+def is_plusminus_interval_format(value):
+    if isinstance(value, str):
+        regex = r"[+-]?\d+(?:\.\d+)±\d+(?:\.\d+)"
         return bool(re.search(regex, value))
     else:
         return False
@@ -394,12 +501,17 @@ def move_resources(gen):
 
     plugin_paths = gen.settings['PLUGIN_PATHS']
     for path in plugin_paths:
-        css_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'css.min')
-        if os.path.isdir(css_source):
-            copy_resources(css_source, css_target, os.listdir(css_source))
-        js_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'js.min')
-        if os.path.isdir(js_source):
-            copy_resources(js_source, js_target, os.listdir(js_source))
+        css_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'css.min', 'datatable.bundle.min.css')
+        if not os.path.exists(css_target):
+            os.makedirs(css_target)
+        if os.path.exists(css_source):
+            shutil.copy2(css_source, css_target)
+
+        js_source = os.path.join(path, 'pelican-datatable', 'js-datatable', 'js.min', 'datatable.bundle.min.js')
+        if not os.path.exists(js_target):
+            os.makedirs(js_target)
+        if os.path.exists(js_source):
+            shutil.copy2(js_source, js_target)
 
 
 def init(gen):

@@ -137,7 +137,15 @@ Example:
                     data-tag="true"
                     data-filter-control="select">
                     Feature 2
-                </th>            
+                </th>      
+                <th 
+                    data-align="center"
+                    data-field="info.second_level_value"
+                    data-sortable="true"
+                    data-tag="true"
+                    data-filter-control="select">
+                    Second level value
+                </th>                            
             </tr>
         </thead>
     </table>
@@ -157,7 +165,9 @@ Example structure:
         feature1: square
         feature2: triangle
         row_css: danger
-    
+        info:
+            second_level_value: 2
+            
       - code: Blue
         value1: 62
         value2: 42
@@ -166,7 +176,9 @@ Example structure:
         feature1: circle
         feature2: triangle
         row_css: warning
-    
+        info:
+            second_level_value: 12
+            
       - code: Black
         value1: 18
         value2: 42
@@ -175,7 +187,9 @@ Example structure:
         feature1: square
         feature2: circle
         row_css: success
-    
+        info:
+            second_level_value: 22
+                
       - code: White
         value1: 18
         value2: 37
@@ -184,7 +198,9 @@ Example structure:
         feature1: triangle
         feature2: square
         row_css: info
-    
+        info:
+            second_level_value: 22
+            
       - code: Purple
         value1: 12
         value2: 22
@@ -192,7 +208,9 @@ Example structure:
         value4: 52
         feature1: square
         feature2: circle
-    
+        info:
+            second_level_value: 32
+                
       - code: Brown
         value1: 42
         value2: 26
@@ -200,7 +218,9 @@ Example structure:
         value4: 52
         feature1: block
         feature2: pyramid
-    
+        info:
+            second_level_value: 16
+            
       - code: Baseline
         value1: 62
         value2: 32
@@ -210,4 +230,6 @@ Example structure:
         feature2: circle
         baseline: true
         row_css: active
+        info:
+            second_level_value: 54
 
